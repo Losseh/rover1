@@ -38,4 +38,4 @@ python bleak lib (to connect with MCU via bluetooth low energy)
 
 #### UI
 
-scratch/turbowarp - https://desktop.turbowarp.org/
+[scratch/turbowarp](https://desktop.turbowarp.org/)
