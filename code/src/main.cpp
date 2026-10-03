@@ -21,24 +21,33 @@
 class CmdCallback : public BLECharacteristicCallbacks {
   void onWrite(BLECharacteristic *pChar) override {
     std::string value = pChar->getValue();
+
+    Serial.printf("BLE WRITE! len=%d: ", value.length());
+
+    for (unsigned char c : value) {
+      Serial.printf("%02X ", c);
+    }
+
+    Serial.println();
+
     if (value.length() >= 3) {
-      uint8_t cmd = value[0];
+      uint8_t cmd = (uint8_t)value[0];
       int8_t vL = (int8_t)value[1];
       int8_t vR = (int8_t)value[2];
 
       Serial.printf("CMD=%d VL=%d VR=%d\n", cmd, vL, vR);
-
-      // TU wywołujesz sterowanie silnikami
-      // drive(vL, vR);
-    } else {
-      uint8_t cmd = value[0];
-      Serial.printf("CMD=%d", cmd);
+    }
+    else if (value.length() > 0) {
+      uint8_t cmd = (uint8_t)value[0];
+      Serial.printf("CMD=%d\n", cmd);
     }
   }
 };
 
 void setup() {
   Serial.begin(115200);
+
+  Serial.write("init");
 
   BLEDevice::init("Tymek rover");
   BLEServer *server = BLEDevice::createServer();
@@ -57,8 +66,30 @@ void setup() {
   adv->addServiceUUID(SERVICE_UUID);
   adv->start();
 
-  Serial.println("Robot BLE gotowy");
+  // Set the RGB LED pins as outputs
+  pinMode(LED_RED, OUTPUT);
+  pinMode(LED_GREEN, OUTPUT);
+  pinMode(LED_BLUE, OUTPUT);
 }
 
 void loop() {
+  // Turn on Red (LOW is ON)
+  digitalWrite(LED_RED, LOW);
+  digitalWrite(LED_GREEN, HIGH);
+  digitalWrite(LED_BLUE, HIGH);
+  delay(1000);
+
+  // Turn on Green
+  digitalWrite(LED_RED, HIGH);
+  digitalWrite(LED_GREEN, LOW);
+  digitalWrite(LED_BLUE, HIGH);
+  delay(1000);
+
+  // Turn on Blue
+  digitalWrite(LED_RED, HIGH);
+  digitalWrite(LED_GREEN, HIGH);
+  digitalWrite(LED_BLUE, LOW);
+  delay(1000);
+
+  Serial.println("loop end");
 }
